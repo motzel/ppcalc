@@ -2,11 +2,11 @@
   import ScoresDownloader from './ScoresDownloader.svelte'
   import Stats from './Stats.svelte'
 
-  let scores = null;
+  let playerData = null;
 </script>
 
-{#if !scores}
-  <ScoresDownloader on:download={event => scores = event?.detail} />
+{#if !playerData}
+  <ScoresDownloader on:download={event => playerData = event?.detail} />
 {:else}
-  <Stats {scores} />
+  <Stats {playerData} />
 {/if}

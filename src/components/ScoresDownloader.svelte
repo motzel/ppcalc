@@ -32,22 +32,14 @@
 
   const apiFetchScoresPage = async (playerId, page = 1, itemsPerPage = 100) => (await (await
     fetch(`/cors/score-saber/api/player/${playerId}/scores?limit=${itemsPerPage}&page=${page}`)).json())
-    .map(s => ({
-      songName: s?.leaderboard?.songName ?? 'unknown',
-      mapper: s?.leaderboard?.levelAuthorName ?? 'unknown',
-      difficulty: difficulties?.[s?.leaderboard?.difficulty?.difficulty ?? 'unknown'],
-      pp: s?.score?.pp ?? 0,
-      weight: s?.score?.weight ?? 0,
-      acc: s?.leaderboard?.maxScore && s?.score?.baseScore ? s.score.baseScore / s.leaderboard.maxScore * 100 : 0,
-    }))
-    .filter(s => s.pp)
+    .filter(s => s?.score?.pp)
   ;
 
   async function fetchScores(playerInfo) {
     if (!playerInfo?.id?.length) return;
 
     try {
-      let playerScores = [];
+      let scores = [];
       let allScoresFetched = false;
       let page = 1;
       const itemsPerPage = 100;
@@ -56,15 +48,16 @@
 
       while (!allScoresFetched) {
         message = `Downloading ranked scores, ${page * itemsPerPage}...`;
+
         const scoresPage = await apiFetchScoresPage(playerInfo.id, page++, itemsPerPage);
         if (scoresPage?.errorMessage) throw scoresPage.errorMessage;
 
-        playerScores = [...playerScores, ...scoresPage];
+        scores = [...scores, ...scoresPage];
 
         allScoresFetched = scoresPage.length < itemsPerPage;
       }
 
-      dispatch('download', playerScores)
+      dispatch('download', {playerInfo, scores})
     } catch (e) {
       error = `Error has occurred: ${e.toString()}`;
     } finally {
