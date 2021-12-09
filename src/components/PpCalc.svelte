@@ -19,7 +19,7 @@
   let accuracy = DEFAULT_ACC;
   let lastCalculatedPpValue = 0;
   let rawPp = null;
-  let isCalculating = false;
+  let isCalculating = true;
 
   async function calcOnePpBoundary(scores, ppValue) {
     if (!scores?.length || !Number.isFinite(ppValue)) {
@@ -79,7 +79,7 @@
 
 <div>
   <section>
-    {#if Number.isFinite(rawPp)}
+
       <Badge
         label={`+ ${formatNumber(ppValue)}pp`}
         title={`Determines how many raw PPs in the new play you need to achieve to increase your total PP by ${formatNumber(ppValue)}pp`}
@@ -91,6 +91,7 @@
         bgColor="var(--ppColour)"
       />
 
+    {#if Number.isFinite(rawPp)}
       <div>
         <div>
           <div>
@@ -142,9 +143,6 @@
           </table>
         </div>
       </div>
-
-    {:else}
-      <p>No PP data.</p>
     {/if}
   </section>
 </div>
