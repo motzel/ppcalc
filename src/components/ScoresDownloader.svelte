@@ -108,6 +108,8 @@
   $: extractPlayerId(profileUrl)
   $: fetchPlayer(playerId)
   $: fetchScores(playerInfo);
+
+  $: isSteamPlayer = playerInfo?.id && parseInt(playerInfo.id, 10) >= 70000000000000000;
 </script>
 
 <main>
@@ -121,11 +123,15 @@
 
     {#if playerInfo}
       <h5 class="title is-5">
-        <a rel="external" target="_blank" href="https://steamcommunity.com/profiles/{playerInfo.playerId}">
-          {playerInfo?.name}
+        {#if isSteamPlayer}
+        <a class="player-name" rel="external" target="_blank" href="https://steamcommunity.com/profiles/{playerInfo.id}">
+          {playerInfo.name}
         </a>
+        {:else}
+          <span class="player-name">{playerInfo.name}</span>
+        {/if}
         <span class="divider"></span>
-        <span title="Performance Points" class="title-header pp">{formatNumber(playerInfo?.pp)}pp</span>
+        <span title="Performance Points" class="title-header pp">{formatNumber(playerInfo.pp)}pp</span>
       </h5>
     {/if}
 
@@ -150,6 +156,10 @@
         width: 40rem;
         max-width: 100%;
         text-align: center;
+    }
+
+    .player-name {
+        color: var(--ppColour)!important;
     }
 
     .profile-input {
