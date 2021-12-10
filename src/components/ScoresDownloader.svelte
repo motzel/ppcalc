@@ -22,8 +22,8 @@
 
   const apiFetchPlayer = async playerId => (await (await fetch(`/cors/score-saber/api/player/${playerId}/full`)).json());
 
-  const apiFetchScoresPage = async (playerId, page = 1, itemsPerPage = 100) => (await (await
-    fetch(`/cors/score-saber/api/player/${playerId}/scores?limit=${itemsPerPage}&page=${page}`)).json())
+  const apiFetchScoresPage = async (playerId, page = 1, itemsPerPage = 100) => ((await (await
+    fetch(`/cors/score-saber/api/player/${playerId}/scores?limit=${itemsPerPage}&page=${page}`)).json())?.playerScores ?? [])
     .filter(s => s?.score?.pp)
   ;
 
