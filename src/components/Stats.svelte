@@ -6,6 +6,22 @@
 
   export let playerData = null;
 
+  let modifiedPercentage = {};
+
+  function onPercentageChanged(e) {
+    if (!e.detail) return;
+
+    const {leaderboardId, percentage} = e.detail;
+
+    if (leaderboardId) {
+      if (percentage) modifiedPercentage[leaderboardId] = percentage;
+      else {
+        delete modifiedPercentage[leaderboardId];
+        modifiedPercentage = modifiedPercentage;
+      }
+    }
+  }
+
   $: ({playerInfo, scores} = playerData ?? {})
 </script>
 
@@ -29,7 +45,7 @@
   </div>
 
   <div class="box has-shadow">
-    <Scores {scores} />
+    <Scores {scores} {modifiedPercentage} on:percentage-changed={onPercentageChanged} />
   </div>
 {/if}
 

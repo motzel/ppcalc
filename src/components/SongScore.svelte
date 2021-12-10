@@ -1,5 +1,6 @@
 <script>
-  import {formatNumber} from '../utils/format'
+  import {createEventDispatcher} from 'svelte'
+  import {formatNumber, round} from '../utils/format'
   import Badge from './Badge.svelte'
   import Accuracy from './Accuracy.svelte'
   import SongInfo from './SongInfo.svelte'
@@ -8,6 +9,16 @@
   import FormattedDate from './FormattedDate.svelte'
 
   export let songScore = null;
+
+  const dispatch = createEventDispatcher();
+
+  function onPercentageChange(leaderboardId, value) {
+    if (!leaderboardId || !value) return;
+
+    const percentage = parseFloat(value);
+
+    dispatch('percentage-changed', {leaderboardId, percentage: percentage === round(score?.basePercentage) ? null : percentage});
+  }
 
   $: leaderboard = songScore?.leaderboard ?? null;
   $: score = songScore?.score ?? null
@@ -39,7 +50,6 @@
               <span slot="label">
                 <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
                     pp="{score.pp}" weighted={score.ppWeighted} attribution={score.ppAttribution}
-                    whatIf={score.whatIfPp}
                     zero={formatNumber(0)} withZeroSuffix={true} inline={false}
                     color="white"
                 />
@@ -50,7 +60,7 @@
           <span class="pp with-badge"></span>
         {/if}
 
-        {#if score.acc}
+        {#if score.percentage}
             <span class="acc with-badge">
               <Accuracy {score}/>
             </span>
@@ -65,6 +75,13 @@
                 <Value value={score.modifiedScore} inline={false} digits={0}/>
               </span>
           </Badge>
+        </span>
+        {/if}
+
+        {#if score.percentage}
+        <span class="range">
+          <input type="range" min={round(score.basePercentage)} max={100} step={0.01}
+                 on:input={e => onPercentageChange(leaderboard?.id, e.target.value)}/>
         </span>
         {/if}
       </section>
@@ -165,6 +182,20 @@
 
     .score {
         min-width: 5.25em;
+    }
+
+    .range {
+        grid-column: 1 / span 3;
+        width: 100%;
+        padding-top: .5rem;
+    }
+
+    .range input[type=range] {
+        width: 100%;
+    }
+
+    input[type=range] {
+        outline: none;
     }
 
     .with-badge {

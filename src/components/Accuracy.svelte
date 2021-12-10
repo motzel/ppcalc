@@ -24,13 +24,13 @@
     return badgesDef.reduce((cum, badge) => ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc)) ? badge : cum, badgesDef[badgesDef.length - 1]);
   }
 
-  $: badge = getBadge(score?.acc);
+  $: badge = getBadge(score?.percentage);
 </script>
 
 <Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc : badge} label="">
     <span slot="label">
       <slot name="label-before"></slot>
-      <Value value={score.acc}
+      <Value value={score.percentage}
              title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
       />
       <slot name="label-after"></slot>
