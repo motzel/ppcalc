@@ -22,6 +22,8 @@
 
   $: leaderboard = songScore?.leaderboard ?? null;
   $: score = songScore?.score ?? null
+  $: totalMistakes = (score?.badCuts ?? 0) + (score?.missedNotes ?? 0)
+  $: fc = !!score?.fullCombo
 </script>
 
 {#if songScore}
@@ -68,15 +70,19 @@
           <span class="acc with-badge"></span>
         {/if}
 
-        {#if score.modifiedScore}
         <span class="score with-badge">
-          <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+          <Badge onlyLabel={true} color={fc ? 'var(--increase)' : "white"} bgColor="var(--dimmed)"
+                 title={fc ? null : `Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}>
               <span slot="label">
-                <Value value={score.modifiedScore} inline={false} digits={0}/>
+                {#if fc}
+                  FC
+                {:else}
+                  <i class="fa fa-times"></i>
+                  <Value value={totalMistakes} inline={false} digits={0}/>
+                {/if}
               </span>
           </Badge>
         </span>
-        {/if}
 
         {#if score.percentage}
         <span class="range">
