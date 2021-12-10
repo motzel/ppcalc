@@ -20,14 +20,6 @@
     message = null;
   }
 
-  const difficulties = {
-    1: 'easy',
-    3: 'normal',
-    5: 'hard',
-    7: 'expert',
-    9: 'expert+',
-  }
-
   const apiFetchPlayer = async playerId => (await (await fetch(`/cors/score-saber/api/player/${playerId}/full`)).json());
 
   const apiFetchScoresPage = async (playerId, page = 1, itemsPerPage = 100) => (await (await
@@ -207,7 +199,7 @@
         color: var(--decrease);
     }
 
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 767px) {
         h5 {
             flex-direction: column;
             gap: .25rem;
