@@ -58,7 +58,7 @@
   }
 
   async function fetchPlayer(playerId) {
-    if ((playerId?.length ?? 0) < 17) return;
+    if ((playerId?.length ?? 0) < 16) return;
 
     try {
       isFetching = true;
