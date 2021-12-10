@@ -1,6 +1,7 @@
 <script>
   import Avatar from './Avatar.svelte'
   import PpCalc from './PpCalc.svelte'
+  import Scores from './Scores.svelte'
   import {formatNumber} from '../utils/format'
 
   export let playerData = null;
@@ -25,6 +26,10 @@
         <PpCalc {scores} />
       </div>
     </div>
+  </div>
+
+  <div class="box has-shadow">
+    <Scores {scores} />
   </div>
 {/if}
 

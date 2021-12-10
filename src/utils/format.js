@@ -1,6 +1,8 @@
-function getCurrentLocale() {
+export function getCurrentLocale() {
   return navigator?.language ?? 'en-US';
 }
+
+export const padNumber = (num, pad = 2) => (Array(pad).fill('0').join('') + num).slice(-pad);
 
 export function formatNumber(num, digits = 2, addSign = false, notANumber = null) {
   if (!Number.isFinite(num)) {

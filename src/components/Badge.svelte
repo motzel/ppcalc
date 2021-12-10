@@ -1,5 +1,4 @@
 <script>
-    import { fade } from 'svelte/transition';
     import Value from "./Value.svelte";
 
     export let label = null;
@@ -24,7 +23,7 @@
     export let inline = false;
 </script>
 
-<span class={"badge " + styling} class:clickable class:not-selected={notSelected} class:fluid={fluid} style="--color:{color}; --background-color:{bgColor}" title={title} transition:fade={{ duration: 500 }} on:click>
+<span class={"badge " + styling} class:clickable class:not-selected={notSelected} class:fluid={fluid} style="--color:{color}; --background-color:{bgColor}" title={title} on:click>
     <span class="label"><slot name="label">{label}</slot></span>
     {#if !onlyLabel}
         <span class="spacer"></span>
