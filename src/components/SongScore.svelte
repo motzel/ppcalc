@@ -71,7 +71,7 @@
         {/if}
 
         <span class="score with-badge">
-          <Badge onlyLabel={true} color={fc ? 'var(--increase)' : "white"} bgColor="var(--dimmed)"
+          <Badge onlyLabel={true} color="white" bgColor={fc ? 'var(--increase)' : "var(--decrease)"}
                  title={fc ? null : `Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}>
               <span slot="label">
                 {#if fc}
