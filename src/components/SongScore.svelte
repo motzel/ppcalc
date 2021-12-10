@@ -88,6 +88,8 @@
         <span class="range">
           <input type="range" min={round(score.basePercentage)} max={100} step={0.01} bind:value={score.percentage}
                  on:input={e => onPercentageChange(leaderboard?.id, leaderboard?.stars, e.target.value)}/>
+          <i class="fas fa-undo" title="Undo"
+             on:click={() => onPercentageChange(leaderboard?.id, leaderboard?.stars, round(score?.basePercentage))}></i>
         </span>
         {/if}
       </section>
@@ -194,10 +196,18 @@
         grid-column: 1 / span 3;
         width: 100%;
         padding-top: .5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .range i.fas {
+        cursor: pointer;
+        margin-left: .5rem;
     }
 
     .range input[type=range] {
-        width: 100%;
+        width: calc(100% - 1.5rem);
     }
 
     input[type=range] {
