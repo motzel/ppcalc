@@ -79,7 +79,7 @@ const convertScoresToObject = (scores, idFunc = score => score?.leaderboard?.id,
     return scoresObj;
   }, {})
 
-const getTotalPlayerPp = (scores, modifiedScores = {}) => getTotalPp(
+export const getTotalPlayerPp = (scores, modifiedScores = {}) => getTotalPp(
   Object.values({
     ...convertScoresToObject(scores),
     ...modifiedScores,

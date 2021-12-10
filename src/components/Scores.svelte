@@ -23,7 +23,6 @@
       const {score, leaderboard} = scoreInfo;
 
       const maxScore = leaderboard?.maxScore ?? 0;
-
       const stars = leaderboard?.stars ?? 0;
       const basePp = score?.pp ?? 0;
       const basePercentage = (score?.modifiedScore ?? 0) / maxScore * 100;
@@ -31,7 +30,7 @@
       let pp = basePp;
       let percentage = basePercentage;
       if (modifiedPercentage[leaderboard?.id]) {
-        percentage = modifiedPercentage[leaderboard.id];
+        percentage = modifiedPercentage[leaderboard.id].percentage;
         pp = PP_PER_STAR * stars * ppFactorFromAcc(percentage);
       }
 

@@ -12,12 +12,12 @@
 
   const dispatch = createEventDispatcher();
 
-  function onPercentageChange(leaderboardId, value) {
-    if (!leaderboardId || !value) return;
+  function onPercentageChange(leaderboardId, stars, value) {
+    if (!leaderboardId || !stars || !value) return;
 
     const percentage = parseFloat(value);
 
-    dispatch('percentage-changed', {leaderboardId, percentage: percentage === round(score?.basePercentage) ? null : percentage});
+    dispatch('percentage-changed', {leaderboardId, stars, percentage: percentage === round(score?.basePercentage) ? null : percentage});
   }
 
   $: leaderboard = songScore?.leaderboard ?? null;
@@ -80,8 +80,8 @@
 
         {#if score.percentage}
         <span class="range">
-          <input type="range" min={round(score.basePercentage)} max={100} step={0.01}
-                 on:input={e => onPercentageChange(leaderboard?.id, e.target.value)}/>
+          <input type="range" min={round(score.basePercentage)} max={100} step={0.01} bind:value={score.percentage}
+                 on:input={e => onPercentageChange(leaderboard?.id, leaderboard?.stars, e.target.value)}/>
         </span>
         {/if}
       </section>

@@ -3,6 +3,7 @@
   import PpCalc from './PpCalc.svelte'
   import Scores from './Scores.svelte'
   import {formatNumber} from '../utils/format'
+  import {getTotalPlayerPp, PP_PER_STAR, ppFactorFromAcc} from '../utils/pp'
 
   export let playerData = null;
 
@@ -14,15 +15,29 @@
     const {leaderboardId, percentage} = e.detail;
 
     if (leaderboardId) {
-      if (percentage) modifiedPercentage[leaderboardId] = percentage;
-      else {
+      if (!percentage) {
         delete modifiedPercentage[leaderboardId];
         modifiedPercentage = modifiedPercentage;
+      } else {
+        modifiedPercentage[leaderboardId] = e.detail;
       }
     }
   }
 
   $: ({playerInfo, scores} = playerData ?? {})
+  $: totalPlayerPp = scores?.length ? getTotalPlayerPp(scores) : 0;
+  $: modifiedTotalPlayerPp = scores?.length
+    ?
+    getTotalPlayerPp(scores, Object.entries(modifiedPercentage).reduce((cum, [leaderboardId, modified]) => {
+      const pp = PP_PER_STAR * modified.stars * ppFactorFromAcc(modified.percentage);
+
+      return {
+        ...cum,
+       ...{[leaderboardId]: {score: {pp}}}
+      };
+    }, {}))
+    : totalPlayerPp
+  $: totalPpDiff = modifiedTotalPlayerPp - totalPlayerPp;
 </script>
 
 {#if playerInfo}
@@ -36,7 +51,12 @@
         <h1 class="title is-4 has-text-centered-mobile">
           <div class="name">{playerInfo.name}</div>
 
-          <span class="pp">{formatNumber(playerInfo.pp)}pp</span>
+          <span class="pp">
+            {formatNumber(playerInfo.pp)}pp
+            {#if totalPpDiff > 0}
+              <span class="inc">+{formatNumber(totalPpDiff)}pp</span>
+            {/if}
+          </span>
         </h1>
 
         <PpCalc {scores} />
