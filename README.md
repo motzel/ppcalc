@@ -2,7 +2,7 @@
 
 ## Users
 
-Just go to [ppcalc.motzel.dev](https://ppcalc.motzel.dev)
+Just go to [isitworthplaying.motzel.dev](https://isitworthplaying.motzel.dev)
 
 ## Devs
 
