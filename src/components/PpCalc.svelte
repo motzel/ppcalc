@@ -77,9 +77,8 @@
   $: calcStarsAndAccFromRawPp(rawPp);
 </script>
 
-<div>
+<div class="pp-calc">
   <section>
-
       <Badge
         label={`+ ${formatNumber(ppValue)}pp`}
         title={`Determines how many raw PPs in the new play you need to achieve to increase your total PP by ${formatNumber(ppValue)}pp`}
@@ -149,6 +148,7 @@
 
 <style>
     section {
+        width: 32rem;
         max-width: 32rem;
     }
     .range {
@@ -194,6 +194,12 @@
     }
 
     @media screen and (max-width: 767px) {
+        .pp-calc {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         section {
             text-align: center;
         }

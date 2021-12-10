@@ -43,7 +43,7 @@
       color: var(--ppColour);
   }
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 767px) {
       h1 {
           flex-direction: column;
       }
