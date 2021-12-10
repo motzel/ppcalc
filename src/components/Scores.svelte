@@ -53,7 +53,7 @@
 
 {#if scores?.length}
   {#each currentPageScores as score (score?.leaderboard?.id)}
-    <SongScore songScore={score} on:percentage-changed/>
+    <SongScore songScore={score} on:percentage-changed on:add-to-playlist on:remove-from-playlist />
   {/each}
 
   <Pager {currentPage} totalItems={scores.length} itemsPerPage={ITEMS_PER_PAGE} itemsPerPageValues={null}

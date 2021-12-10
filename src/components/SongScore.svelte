@@ -1,6 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import {formatNumber, round} from '../utils/format'
+  import playlist, {playlistMatch} from '../stores/playlist'
   import Badge from './Badge.svelte'
   import Accuracy from './Accuracy.svelte'
   import SongInfo from './SongInfo.svelte'
@@ -17,13 +18,18 @@
 
     const percentage = parseFloat(value);
 
-    dispatch('percentage-changed', {leaderboardId, stars, percentage: percentage === round(score?.basePercentage) ? null : percentage});
+    dispatch('percentage-changed', {
+      leaderboardId,
+      stars,
+      percentage: percentage === round(score?.basePercentage) ? null : percentage,
+    });
   }
 
   $: leaderboard = songScore?.leaderboard ?? null;
   $: score = songScore?.score ?? null
   $: totalMistakes = (score?.badCuts ?? 0) + (score?.missedNotes ?? 0)
   $: fc = !!score?.fullCombo
+  $: isAddedToPlaylist = !!$playlist.find(p => playlistMatch(p, leaderboard?.songHash, leaderboard?.difficulty?.difficulty))
 </script>
 
 {#if songScore}
@@ -90,6 +96,15 @@
                  on:input={e => onPercentageChange(leaderboard?.id, leaderboard?.stars, e.target.value)}/>
           <i class="fas fa-undo" title="Undo"
              on:click={() => onPercentageChange(leaderboard?.id, leaderboard?.stars, round(score?.basePercentage))}></i>
+          {#if isAddedToPlaylist}
+            <i class="fas fa-minus-circle" title="Remove from playlist"
+               on:click={() => dispatch('remove-from-playlist', leaderboard)}
+            ></i>
+          {:else}
+            <i class="fas fa-plus-circle" title="Add to playlist"
+               on:click={() => dispatch('add-to-playlist', leaderboard)}
+            ></i>
+          {/if}
         </span>
         {/if}
       </section>
@@ -204,6 +219,16 @@
     .range i.fas {
         cursor: pointer;
         margin-left: .5rem;
+        color: var(--faded);
+        transition: color 300ms;
+    }
+
+    .range i.fas.fa-minus-circle {
+        color: var(--dimmed);
+    }
+
+    .range i.fas:hover {
+        color: white;
     }
 
     .range input[type=range] {
