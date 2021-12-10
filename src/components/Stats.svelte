@@ -139,7 +139,7 @@
         position: fixed;
         padding: .5rem;
         top: .5rem;
-        right: .5rem;
+        right: calc((100% - min(100%, 1150px + 2rem)) / 2 + .5rem);
         background-color: var(--decrease);
         border-radius: 50%;
         transition: all 300ms;
