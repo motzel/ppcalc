@@ -17,7 +17,7 @@ const ppCurve = [
   {at: 93, value: 0.885},
   {at: 94, value: 0.94},
   {at: 95, value: 1},
-  {at: 95.5, value: 1.105},
+  {at: 95.5, value: 1.05},
   {at: 96, value: 1.115},
   {at: 96.5, value: 1.195},
   {at: 97, value: 1.3},
@@ -32,7 +32,7 @@ const ppCurve = [
   {at: 99.25, value: 3.31},
   {at: 99.5, value: 4.14},
   {at: 99.75, value: 5.31},
-  {at: 99.9, value: 6.4},
+  {at: 99.9, value: 6.24},
   {at: 100, value: 7},
 ];
 
