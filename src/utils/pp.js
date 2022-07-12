@@ -145,3 +145,8 @@ export const calcPpBoundary = (rankedScores, expectedPp = 1) => {
 
   return calcRawPpAtIdx(rankedScorePps, 0, expectedPp);
 }
+
+export const getPpFromAccAndStars = (acc, stars, service = 'scoresaber') =>
+  service === 'beatleader'
+    ? stars * acc / 100 * 44
+    : PP_PER_STAR * stars * ppFactorFromAcc(acc)

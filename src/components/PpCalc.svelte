@@ -2,10 +2,18 @@
   import Badge from './Badge.svelte'
   import {debounce} from '../utils/debounce'
   import {formatNumber} from '../utils/format'
-  import {accFromPpFactor, calcPpBoundary, getWhatIfScore, PP_PER_STAR, ppFactorFromAcc} from '../utils/pp'
+  import {
+    accFromPpFactor,
+    calcPpBoundary,
+    getPpFromAccAndStars,
+    getWhatIfScore,
+    PP_PER_STAR,
+    ppFactorFromAcc,
+  } from '../utils/pp'
   import Value from './Value.svelte'
 
   export let scores = null;
+  export let service = 'scoresaber';
 
   const DEBOUNCE_THRESHOLD = 300;
   const ACC_THRESHOLDS = [92, 93, 94, 95, 96, 97, 98, 99];
@@ -35,18 +43,22 @@
   }
 
   async function calcPpFromStars(stars, acc) {
-    const newRawPpFromStars = PP_PER_STAR * stars * ppFactorFromAcc(acc);
+    const newRawPpFromStars = getPpFromAccAndStars(acc, stars, service);
     const whatIf = getWhatIfScore(scores, -1, newRawPpFromStars)?.diff ?? null;
 
     if (whatIf && !isNaN(whatIf)) ppValue = whatIf;
   }
 
   function getStarsForAcc(rawPp, acc) {
-    return rawPp / PP_PER_STAR / ppFactorFromAcc(acc);
+    return service === 'beatleader'
+      ? rawPp / PP_PER_STAR / acc * 100
+      : rawPp / PP_PER_STAR / ppFactorFromAcc(acc);
   }
 
   function getAccForStars(rawPp, stars) {
-    return accFromPpFactor(rawPp / PP_PER_STAR / stars);
+    return service === 'beatleader'
+      ? rawPp / PP_PER_STAR / stars * 100
+      : accFromPpFactor(rawPp / PP_PER_STAR / stars);
   }
 
   function calcStarsAndAccFromRawPp(rawPp) {
@@ -68,7 +80,10 @@
     ppValue = 1;
     accuracy = DEFAULT_ACC;
 
-    const whatIf = getWhatIfScore(scores, -1, PP_PER_STAR * maxStars * ppFactorFromAcc(100));
+    const whatIf = getWhatIfScore(
+      scores, -1,
+      getPpFromAccAndStars(100, maxStars, service),
+    );
     if (whatIf) maxPp = whatIf.diff;
   }
 

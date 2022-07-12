@@ -3,6 +3,12 @@ import {isString} from './js'
 
 export const isValidDate = d => d instanceof Date && !isNaN(d);
 
+export const dateFromUnix = str => {
+    const date = new Date(parseInt(str, 10) * 1000);
+
+    return isValidDate(date) ? date : null;
+}
+
 export const dateFromString = str => {
     // convert SS page date format to ISO
     const matches = str && isString(str) ? str.match(/^(\d{4}-\d{1,2}-\d{1,2})\s+(\d{1,2}:\d{1,2}(:\d{1,2})?)\sUTC$/) : null;

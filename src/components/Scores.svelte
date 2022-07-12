@@ -1,10 +1,11 @@
 <script>
   import Pager from './Pager.svelte'
   import SongScore from './SongScore.svelte'
-  import {PP_PER_STAR, ppFactorFromAcc} from '../utils/pp'
+  import {getPpFromAccAndStars} from '../utils/pp'
 
   export let scores = null;
   export let modifiedPercentage = {};
+  export let service = 'scoresaber';
 
   const ITEMS_PER_PAGE = 8;
 
@@ -25,16 +26,16 @@
       const maxScore = leaderboard?.maxScore ?? 0;
       const stars = leaderboard?.stars ?? 0;
       const basePp = score?.pp ?? 0;
-      const basePercentage = (score?.modifiedScore ?? 0) / maxScore * 100;
+      const basePercentage = maxScore ? (score?.modifiedScore ?? 0) / maxScore * 100 : score?.percentage;
 
       let pp = basePp;
       let percentage = basePercentage;
       if (modifiedPercentage[leaderboard?.id]) {
         percentage = modifiedPercentage[leaderboard.id].percentage;
-        pp = PP_PER_STAR * stars * ppFactorFromAcc(percentage);
+        pp = getPpFromAccAndStars(percentage, stars, service);
       }
 
-      return maxScore
+      return basePercentage
         ? {
           leaderboard,
           score: {

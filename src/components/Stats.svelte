@@ -3,7 +3,7 @@
   import PpCalc from './PpCalc.svelte'
   import Scores from './Scores.svelte'
   import {formatNumber} from '../utils/format'
-  import {getTotalPlayerPp, PP_PER_STAR, ppFactorFromAcc} from '../utils/pp'
+  import {getPpFromAccAndStars, getTotalPlayerPp} from '../utils/pp'
   import playlist from '../stores/playlist'
   import download from '../utils/download'
   import {difficulties} from '../utils/diffs'
@@ -80,7 +80,7 @@
   $: modifiedTotalPlayerPp = scores?.length
     ?
     getTotalPlayerPp(scores, Object.entries(modifiedPercentage).reduce((cum, [leaderboardId, modified]) => {
-      const pp = PP_PER_STAR * modified.stars * ppFactorFromAcc(modified.percentage);
+      const pp = getPpFromAccAndStars(modified.percentage, modified.stars, playerData?.service ?? 'scoresaber');
 
       return {
         ...cum,
@@ -111,13 +111,13 @@
           </span>
           </h1>
 
-          <PpCalc {scores}/>
+          <PpCalc {scores} service={playerData?.service ?? 'scoresaber'} />
         </div>
       </div>
     </div>
 
     <div class="box has-shadow">
-      <Scores {scores} {modifiedPercentage} on:percentage-changed={onPercentageChanged}
+      <Scores {scores} service={playerData?.service ?? 'scoresaber'} {modifiedPercentage} on:percentage-changed={onPercentageChanged}
               on:add-to-playlist={onAddToPlaylist} on:remove-from-playlist={onRemoveFromPlaylist}/>
     </div>
   {/if}
