@@ -32,7 +32,9 @@
       let percentage = basePercentage;
       if (modifiedPercentage[leaderboard?.id]) {
         percentage = modifiedPercentage[leaderboard.id].percentage;
-        pp = getPpFromAccAndStars(percentage, stars, service);
+        const newPp = getPpFromAccAndStars(percentage, stars, service);
+
+        pp = !isNaN(newPp) ? newPp : basePp;
       }
 
       return basePercentage

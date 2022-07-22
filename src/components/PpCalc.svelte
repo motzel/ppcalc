@@ -44,7 +44,7 @@
 
   async function calcPpFromStars(stars, acc) {
     const newRawPpFromStars = getPpFromAccAndStars(acc, stars, service);
-    const whatIf = getWhatIfScore(scores, -1, newRawPpFromStars)?.diff ?? null;
+    const whatIf = !isNaN(newRawPpFromStars) ? getWhatIfScore(scores, -1, newRawPpFromStars)?.diff ?? null : null;
 
     if (whatIf && !isNaN(whatIf)) ppValue = whatIf;
   }

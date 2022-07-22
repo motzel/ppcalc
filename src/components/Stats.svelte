@@ -81,6 +81,7 @@
     ?
     getTotalPlayerPp(scores, Object.entries(modifiedPercentage).reduce((cum, [leaderboardId, modified]) => {
       const pp = getPpFromAccAndStars(modified.percentage, modified.stars, playerData?.service ?? 'scoresaber');
+      if (isNaN(pp)) return cum;
 
       return {
         ...cum,

@@ -146,7 +146,19 @@ export const calcPpBoundary = (rankedScores, expectedPp = 1) => {
   return calcRawPpAtIdx(rankedScorePps, 0, expectedPp);
 }
 
+function blCurve(acc, stars) {
+  const l = 1 - (0.03 * (stars - 3.0)) / 11.0;
+  const a = 0.96 * l
+  const f = 1.2 - (0.6 * stars) / 14.0
+
+  return Math.pow(Math.log10(l / (l - acc)) / Math.log10(l / (l - a)), f);
+}
+
+function blPpFromAcc(acc, stars) {
+  return blCurve(acc, stars - 0.5) * (stars + 0.5) * 42;
+}
+
 export const getPpFromAccAndStars = (acc, stars, service = 'scoresaber') =>
   service === 'beatleader'
-    ? stars * acc / 100 * 44
+    ? blPpFromAcc(acc/100, stars)
     : PP_PER_STAR * stars * ppFactorFromAcc(acc)
