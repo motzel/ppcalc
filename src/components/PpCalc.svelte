@@ -105,7 +105,7 @@
         bgColor="var(--ppColour)"
       />
 
-    {#if Number.isFinite(rawPp)}
+    {#if Number.isFinite(rawPp) && service !== 'beatleader'}
       <div>
         <div>
           <div>
