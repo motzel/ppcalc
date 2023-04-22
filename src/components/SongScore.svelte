@@ -79,7 +79,11 @@
 
         <span class="score with-badge">
           <Badge onlyLabel={true} color="white" bgColor={fc ? 'var(--increase)' : "var(--decrease)"}
-                 title={fc ? null : `Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}>
+                 title={fc ? null : `Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}${Number.isFinite(score?.fcAccuracy) ? ' / Click to check FC accuracy' : ''}`}
+                 clickable={!fc && Number.isFinite(score?.fcAccuracy)}
+                 on:click={() => !fc && Number.isFinite(score?.fcAccuracy) ? onPercentageChange(leaderboard?.id,
+                 leaderboard?.stars, score.fcAccuracy * 100) : null }
+          >
               <span slot="label">
                 {#if fc}
                   FC
@@ -284,5 +288,9 @@
             margin-right: 0;
             padding-bottom: .75em;
         }
+    }
+
+    .clickable, .clickable :global() {
+      cursor: pointer!important;
     }
 </style>
