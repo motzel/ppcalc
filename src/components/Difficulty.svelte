@@ -1,5 +1,6 @@
 <script>
   import {getHumanDiffInfo} from '../utils/diffs'
+  import {formatNumber} from '../utils/format'
   import Value from './Value.svelte'
 
   export let diff;
@@ -9,7 +10,7 @@
   export let starsSuffix = "*"
 
   $: diffInfo = diff ? getHumanDiffInfo(diff) : null;
-  $: title = useShortName && diffInfo.type !== 'Standard' ? diffInfo.name: diffInfo.fullName;
+  $: title = (useShortName && diffInfo.type !== 'Standard' ? diffInfo.name: diffInfo.fullName) + (diff?.accRating && diff?.passRating && diff?.techRating ? ` / Pass: ${formatNumber(diff.passRating)}* / Acc: ${formatNumber(diff.accRating)}* / Tech: ${formatNumber(diff.techRating)}*` : '');
 </script>
 
 {#if diffInfo}
