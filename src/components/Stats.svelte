@@ -10,19 +10,19 @@
 
   export let playerData = null;
 
-  let modifiedPercentage = {};
+  let modifiedScores = {};
 
-  function onPercentageChanged(e) {
+  function onScoreChanged(e) {
     if (!e.detail) return;
 
-    const {leaderboardId, percentage} = e.detail;
+    const {leaderboardId, percentage, modifiers} = e.detail;
 
     if (leaderboardId) {
-      if (!percentage) {
-        delete modifiedPercentage[leaderboardId];
-        modifiedPercentage = modifiedPercentage;
+      if (!percentage && !modifiers) {
+        delete modifiedScores[leaderboardId];
+        modifiedScores = modifiedScores;
       } else {
-        modifiedPercentage[leaderboardId] = e.detail;
+        modifiedScores[leaderboardId] = e.detail;
       }
     }
   }
@@ -79,10 +79,10 @@
   $: totalPlayerPp = scores?.length ? getTotalPlayerPp(scores) : 0;
   $: modifiedTotalPlayerPp = scores?.length
     ?
-    getTotalPlayerPp(scores, Object.entries(modifiedPercentage).reduce((cum, [leaderboardId, modified]) => {
+    getTotalPlayerPp(scores, Object.entries(modifiedScores).reduce((cum, [leaderboardId, modified]) => {
       const score = scores?.find(s => s?.leaderboard?.leaderboardId === leaderboardId);
       const leaderboard = score?.leaderboard;
-      const ratings = getRatings(leaderboard, score?.score?.modifiers);
+      const ratings = getRatings(leaderboard, modified?.modifiers ?? score?.score?.modifiers);
 
       const pp = getPpFromAccAndStars(modified.percentage, modified.stars, playerData?.service ?? 'scoresaber', ratings, leaderboard?.difficulty?.modeName ?? 'Standard');
       if (isNaN(pp)) return cum;
@@ -122,7 +122,8 @@
     </div>
 
     <div class="box has-shadow">
-      <Scores {scores} service={playerData?.service ?? 'scoresaber'} {modifiedPercentage} on:percentage-changed={onPercentageChanged}
+      <Scores {scores} service={playerData?.service ?? 'scoresaber'} {modifiedScores}
+              on:score-changed={onScoreChanged}
               on:add-to-playlist={onAddToPlaylist} on:remove-from-playlist={onRemoveFromPlaylist}/>
     </div>
   {/if}

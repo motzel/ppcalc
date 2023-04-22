@@ -13,15 +13,26 @@
 
   const dispatch = createEventDispatcher();
 
-  function onPercentageChange(leaderboardId, stars, value) {
-    if (!leaderboardId || !stars || !value) return;
+  let selectedMod = null;
 
+  function onChange(leaderboardId, stars, value, newMod) {
+    if (!leaderboardId || !stars || !value || !newMod) return;
+
+    const modifiedMods = mods.filter(m => !availableModNames.includes(m))
+      .concat(newMod?.length && newMod !== '-' ? [newMod] : [])
+      .sort((a,b) => a.localeCompare(b))
+      .join(',');
     const percentage = parseFloat(value);
 
-    dispatch('percentage-changed', {
+    const isModified = percentage !== round(score?.basePercentage) || modifiedMods !== mods?.join(',');
+
+    selectedMod = newMod;
+
+    dispatch('score-changed', {
       leaderboardId,
       stars,
-      percentage: percentage === round(score?.basePercentage) ? null : percentage,
+      percentage: !isModified ? null : percentage,
+      modifiers: !isModified ? null : modifiedMods,
     });
   }
 
@@ -30,7 +41,43 @@
   $: totalMistakes = (score?.badCuts ?? 0) + (score?.missedNotes ?? 0)
   $: fc = !!score?.fullCombo
   $: isAddedToPlaylist = !!$playlist.find(p => playlistMatch(p, leaderboard?.songHash, leaderboard?.difficulty?.difficulty))
-  $: mods = songScore?.score?.modifiers?.split(',')?.filter(m => m?.length) ?? [];
+  $: mods = songScore?.score?.baseModifiers?.split(',')?.filter(m => m?.length)?.sort((a,b) => a.localeCompare(b)) ?? [];
+  $: modifiersRating = leaderboard?.difficulty?.modifiersRating ?? null;
+  $: baseModifiersRating = score?.baseModifiersRating ?? null;
+  $: modifiersAndNoneRating = modifiersRating
+    ? {
+      nonePassRating: leaderboard?.difficulty?.passRating,
+      noneAccRating: leaderboard?.difficulty?.accRating,
+      noneTechRating: leaderboard?.difficulty?.techRating,
+      ...modifiersRating,
+    }
+    : null;
+  $: availableMods = Object.keys(modifiersAndNoneRating ?? {})
+    .map(m => {
+      const match = m?.match(/^(.*?)AccRating/);
+      return match?.[1]
+        ? {
+          name: match[1] === 'none' ? '-' : match[1].toUpperCase(),
+          passRating: modifiersAndNoneRating?.[`${match[1]}PassRating`],
+          accRating: modifiersAndNoneRating?.[`${match[1]}AccRating`],
+          techRating: modifiersAndNoneRating?.[`${match[1]}TechRating`],
+        }
+        : null
+    })
+    .filter(m => m?.name && m?.passRating && m?.accRating && m?.techRating)
+    .sort((a, b) => a.accRating - b.accRating);
+  $: availableModNames = availableMods.map(m => m.name)
+
+  $: if (availableModNames && !selectedMod) {
+    selectedMod = (availableModNames.find(m => mods.length ? mods.includes(m) : false) ?? availableModNames.find(m => !mods.length && m === '-')) ?? null
+  }
+
+  $: selectedModRating = availableMods.find(m => m.name === selectedMod)?.accRating ?? null
+  $: higherIndexes = baseModifiersRating?.accRating && selectedModRating
+    ? availableMods.reduce((acc, mr) => mr.accRating <= selectedModRating && mr.accRating > baseModifiersRating.accRating ? acc + 1 : acc, 0)
+    : 0
+
+  $: minPercentage = Math.max(0, (score?.basePercentage ?? 0) - higherIndexes * 10);
 </script>
 
 {#if songScore}
@@ -81,8 +128,7 @@
           <Badge onlyLabel={true} color="white" bgColor={fc ? 'var(--increase)' : "var(--decrease)"}
                  title={fc ? null : `Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}${Number.isFinite(score?.fcAccuracy) ? ' / Click to check FC accuracy' : ''}`}
                  clickable={!fc && Number.isFinite(score?.fcAccuracy)}
-                 on:click={() => !fc && Number.isFinite(score?.fcAccuracy) ? onPercentageChange(leaderboard?.id,
-                 leaderboard?.stars, score.fcAccuracy * 100) : null }
+                 on:click={() => !fc && Number.isFinite(score?.fcAccuracy) ? onChange(leaderboard?.id, leaderboard?.stars, score.fcAccuracy * 100, selectedMod) : null }
           >
               <span slot="label">
                 {#if fc}
@@ -96,21 +142,38 @@
         </span>
 
         {#if score.percentage}
-        <span class="range">
-          <input type="range" min={round(score.basePercentage)} max={100} step={0.01} bind:value={score.percentage}
-                 on:input={e => onPercentageChange(leaderboard?.id, leaderboard?.stars, e.target.value)}/>
-          <i class="fas fa-undo" title="Undo"
-             on:click={() => onPercentageChange(leaderboard?.id, leaderboard?.stars, round(score?.basePercentage))}></i>
-          {#if isAddedToPlaylist}
-            <i class="fas fa-minus-circle" title="Remove from playlist"
-               on:click={() => dispatch('remove-from-playlist', leaderboard)}
-            ></i>
-          {:else}
-            <i class="fas fa-plus-circle" title="Add to playlist"
-               on:click={() => dispatch('add-to-playlist', leaderboard)}
-            ></i>
-          {/if}
-        </span>
+          <span class="range">
+            {#if availableMods?.length}
+                <select
+                  bind:value={selectedMod}
+                  class="mod"
+                  title="Selected modifier"
+                  on:change={e => onChange(leaderboard?.id, leaderboard?.stars, score.percentage, e.target.value, selectedMod)}
+                >
+                {#each availableMods as mod (mod.name)}
+                  <option value={mod.name}
+                          title={`Pass: ${formatNumber(mod.passRating)}★ / Acc: ${formatNumber(mod.accRating)}★ / Tech: ${formatNumber(mod.techRating)}★`}
+                  >
+                    {mod.name}
+                  </option>
+                {/each}
+                </select>
+            {/if}
+
+            <input type="range" min={round(minPercentage)} max={100} step={0.01} bind:value={score.percentage}
+                   on:input={e => onChange(leaderboard?.id, leaderboard?.stars, e.target.value, selectedMod)}/>
+            <i class="fas fa-undo" title="Undo"
+               on:click={() => onChange(leaderboard?.id, leaderboard?.stars, round(score?.basePercentage), !mods?.join(',')?.length ? '-' : mods.join(','))}></i>
+            {#if isAddedToPlaylist}
+              <i class="fas fa-minus-circle" title="Remove from playlist"
+                 on:click={() => dispatch('remove-from-playlist', leaderboard)}
+              ></i>
+            {:else}
+              <i class="fas fa-plus-circle" title="Add to playlist"
+                 on:click={() => dispatch('add-to-playlist', leaderboard)}
+              ></i>
+            {/if}
+          </span>
         {/if}
       </section>
     </div>
@@ -242,6 +305,10 @@
 
     input[type=range] {
         outline: none;
+    }
+
+    .mod {
+      margin-right: .25rem;
     }
 
     .with-badge {

@@ -5,7 +5,7 @@
   import {getRatings} from '../utils/diffs'
 
   export let scores = null;
-  export let modifiedPercentage = {};
+  export let modifiedScores = {};
   export let service = 'scoresaber';
 
   const ITEMS_PER_PAGE = 8;
@@ -28,12 +28,18 @@
       const stars = leaderboard?.stars ?? 0;
       const basePp = score?.pp ?? 0;
       const basePercentage = maxScore ? (score?.modifiedScore ?? 0) / maxScore * 100 : score?.percentage;
-      const ratings = getRatings(leaderboard, score?.modifiers);
+      const baseModifiers = score?.modifiers ?? '';
+      let ratings = getRatings(leaderboard, score?.modifiers);
+      const baseModifiersRating = {...ratings}
 
       let pp = basePp;
       let percentage = basePercentage;
-      if (modifiedPercentage[leaderboard?.id]) {
-        percentage = modifiedPercentage[leaderboard.id].percentage;
+      let modifiers = baseModifiers;
+      if (modifiedScores[leaderboard?.id]) {
+        modifiers = modifiedScores[leaderboard.id].modifiers;
+        ratings = getRatings(leaderboard, modifiers);
+
+        percentage = modifiedScores[leaderboard.id].percentage;
         const newPp = getPpFromAccAndStars(percentage, stars, service, ratings, leaderboard?.difficulty?.modeName ?? 'Standard');
 
         pp = !isNaN(newPp) ? newPp : basePp;
@@ -49,6 +55,9 @@
             acc: (score.baseScore ?? 0) / maxScore * 100,
             basePercentage,
             percentage,
+            modifiers,
+            baseModifiers,
+            baseModifiersRating,
           },
         }
         : scoreInfo;
@@ -58,7 +67,7 @@
 
 {#if scores?.length}
   {#each currentPageScores as score (score?.leaderboard?.id)}
-    <SongScore songScore={score} on:percentage-changed on:add-to-playlist on:remove-from-playlist />
+    <SongScore songScore={score} on:score-changed on:add-to-playlist on:remove-from-playlist />
   {/each}
 
   <Pager {currentPage} totalItems={scores.length} itemsPerPage={ITEMS_PER_PAGE} itemsPerPageValues={null}

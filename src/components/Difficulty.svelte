@@ -7,10 +7,10 @@
   export let useShortName = false;
   export let reverseColors = false;
   export let stars = null;
-  export let starsSuffix = "*"
+  export let starsSuffix = "★"
 
   $: diffInfo = diff ? getHumanDiffInfo(diff) : null;
-  $: title = (useShortName && diffInfo.type !== 'Standard' ? diffInfo.name: diffInfo.fullName) + (diff?.accRating && diff?.passRating && diff?.techRating ? ` / Pass: ${formatNumber(diff.passRating)}* / Acc: ${formatNumber(diff.accRating)}* / Tech: ${formatNumber(diff.techRating)}*` : '');
+  $: title = (useShortName && diffInfo.type !== 'Standard' ? diffInfo.name: diffInfo.fullName) + (diff?.accRating && diff?.passRating && diff?.techRating ? ` / Pass: ${formatNumber(diff.passRating)}★ / Acc: ${formatNumber(diff.accRating)}★ / Tech: ${formatNumber(diff.techRating)}★` : '');
 </script>
 
 {#if diffInfo}
