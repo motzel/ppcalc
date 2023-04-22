@@ -6,7 +6,7 @@
   import {getPpFromAccAndStars, getTotalPlayerPp} from '../utils/pp'
   import playlist from '../stores/playlist'
   import download from '../utils/download'
-  import {difficulties} from '../utils/diffs'
+  import {difficulties, getRatings} from '../utils/diffs'
 
   export let playerData = null;
 
@@ -80,14 +80,9 @@
   $: modifiedTotalPlayerPp = scores?.length
     ?
     getTotalPlayerPp(scores, Object.entries(modifiedPercentage).reduce((cum, [leaderboardId, modified]) => {
-      const leaderboard = scores?.find(s => s?.leaderboard?.leaderboardId === leaderboardId)?.leaderboard;
-      const ratings = leaderboard?.difficulty?.passRating && leaderboard?.difficulty?.accRating && leaderboard?.difficulty?.techRating
-        ? {
-          passRating: leaderboard.difficulty.passRating,
-          accRating: leaderboard.difficulty?.accRating,
-          techRating: leaderboard.difficulty.techRating,
-        }
-        : null;
+      const score = scores?.find(s => s?.leaderboard?.leaderboardId === leaderboardId);
+      const leaderboard = score?.leaderboard;
+      const ratings = getRatings(leaderboard, score?.score?.modifiers);
 
       const pp = getPpFromAccAndStars(modified.percentage, modified.stars, playerData?.service ?? 'scoresaber', ratings, leaderboard?.difficulty?.modeName ?? 'Standard');
       if (isNaN(pp)) return cum;

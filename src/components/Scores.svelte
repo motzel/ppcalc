@@ -2,6 +2,7 @@
   import Pager from './Pager.svelte'
   import SongScore from './SongScore.svelte'
   import {getPpFromAccAndStars} from '../utils/pp'
+  import {getRatings} from '../utils/diffs'
 
   export let scores = null;
   export let modifiedPercentage = {};
@@ -27,13 +28,7 @@
       const stars = leaderboard?.stars ?? 0;
       const basePp = score?.pp ?? 0;
       const basePercentage = maxScore ? (score?.modifiedScore ?? 0) / maxScore * 100 : score?.percentage;
-      const ratings = leaderboard?.difficulty?.passRating && leaderboard?.difficulty?.accRating && leaderboard?.difficulty?.techRating
-        ? {
-          passRating: leaderboard.difficulty.passRating,
-          accRating: leaderboard.difficulty?.accRating,
-          techRating: leaderboard.difficulty.techRating,
-        }
-        : null;
+      const ratings = getRatings(leaderboard, score?.modifiers);
 
       let pp = basePp;
       let percentage = basePercentage;

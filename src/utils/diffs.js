@@ -50,3 +50,28 @@ export function getHumanDiffInfo(diffInfo) {
     default: return null;
   }
 }
+
+export const getRatings = (leaderboard, modifiers = '') => {
+  const ratings = leaderboard?.difficulty?.passRating && leaderboard?.difficulty?.accRating && leaderboard?.difficulty?.techRating
+    ? {
+      passRating: leaderboard.difficulty.passRating,
+      accRating: leaderboard.difficulty?.accRating,
+      techRating: leaderboard.difficulty.techRating,
+    }
+    : null;
+
+  const mods = (modifiers ?? '').split(',').map(m => m?.toLowerCase()).filter(m => m?.length);
+  if (!mods.length) return ratings;
+
+  const modifiersRating = leaderboard?.difficulty?.modifiersRating ?? null;
+  for(const mod of mods) {
+    if (modifiersRating[`${mod}PassRating`] && modifiersRating[`${mod}AccRating`] && modifiersRating[`${mod}TechRating`])
+      return {
+        passRating: modifiersRating[`${mod}PassRating`],
+        accRating: modifiersRating[`${mod}AccRating`],
+        techRating: modifiersRating[`${mod}TechRating`],
+      }
+  }
+
+  return ratings;
+}
