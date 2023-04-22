@@ -27,12 +27,19 @@
       const stars = leaderboard?.stars ?? 0;
       const basePp = score?.pp ?? 0;
       const basePercentage = maxScore ? (score?.modifiedScore ?? 0) / maxScore * 100 : score?.percentage;
+      const ratings = leaderboard?.difficulty?.passRating && leaderboard?.difficulty?.accRating && leaderboard?.difficulty?.techRating
+        ? {
+          passRating: leaderboard.difficulty.passRating,
+          accRating: leaderboard.difficulty?.accRating,
+          techRating: leaderboard.difficulty.techRating,
+        }
+        : null;
 
       let pp = basePp;
       let percentage = basePercentage;
       if (modifiedPercentage[leaderboard?.id]) {
         percentage = modifiedPercentage[leaderboard.id].percentage;
-        const newPp = getPpFromAccAndStars(percentage, stars, service);
+        const newPp = getPpFromAccAndStars(percentage, stars, service, ratings, leaderboard?.difficulty?.modeName ?? 'Standard');
 
         pp = !isNaN(newPp) ? newPp : basePp;
       }

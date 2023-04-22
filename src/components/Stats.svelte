@@ -80,7 +80,16 @@
   $: modifiedTotalPlayerPp = scores?.length
     ?
     getTotalPlayerPp(scores, Object.entries(modifiedPercentage).reduce((cum, [leaderboardId, modified]) => {
-      const pp = getPpFromAccAndStars(modified.percentage, modified.stars, playerData?.service ?? 'scoresaber');
+      const leaderboard = scores?.find(s => s?.leaderboard?.leaderboardId === leaderboardId)?.leaderboard;
+      const ratings = leaderboard?.difficulty?.passRating && leaderboard?.difficulty?.accRating && leaderboard?.difficulty?.techRating
+        ? {
+          passRating: leaderboard.difficulty.passRating,
+          accRating: leaderboard.difficulty?.accRating,
+          techRating: leaderboard.difficulty.techRating,
+        }
+        : null;
+
+      const pp = getPpFromAccAndStars(modified.percentage, modified.stars, playerData?.service ?? 'scoresaber', ratings, leaderboard?.difficulty?.modeName ?? 'Standard');
       if (isNaN(pp)) return cum;
 
       return {
