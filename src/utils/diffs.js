@@ -65,7 +65,7 @@ export const getRatings = (leaderboard, modifiers = '') => {
 
   const modifiersRating = leaderboard?.difficulty?.modifiersRating ?? null;
   for(const mod of mods) {
-    if (modifiersRating[`${mod}PassRating`] && modifiersRating[`${mod}AccRating`] && modifiersRating[`${mod}TechRating`])
+    if (modifiersRating?.[`${mod}PassRating`] && modifiersRating?.[`${mod}AccRating`] && modifiersRating?.[`${mod}TechRating`])
       return {
         passRating: modifiersRating[`${mod}PassRating`],
         accRating: modifiersRating[`${mod}AccRating`],

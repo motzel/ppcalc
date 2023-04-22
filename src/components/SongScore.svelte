@@ -16,7 +16,7 @@
   let selectedMod = null;
 
   function onChange(leaderboardId, stars, value, newMod) {
-    if (!leaderboardId || !stars || !value || !newMod) return;
+    if (!leaderboardId || !stars || !value || (availableMods?.length && !newMod)) return;
 
     const modifiedMods = mods.filter(m => !availableModNames.includes(m))
       .concat(newMod?.length && newMod !== '-' ? [newMod] : [])
