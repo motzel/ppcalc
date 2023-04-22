@@ -30,6 +30,7 @@
   $: totalMistakes = (score?.badCuts ?? 0) + (score?.missedNotes ?? 0)
   $: fc = !!score?.fullCombo
   $: isAddedToPlaylist = !!$playlist.find(p => playlistMatch(p, leaderboard?.songHash, leaderboard?.difficulty?.difficulty))
+  $: mods = songScore?.score?.modifiers?.split(',')?.filter(m => m?.length) ?? [];
 </script>
 
 {#if songScore}
@@ -48,7 +49,7 @@
       </span>
 
       <span class="song">
-        <SongInfo {leaderboard}/>
+        <SongInfo {leaderboard} {mods}/>
       </span>
 
       <section class="stats">
