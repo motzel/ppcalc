@@ -37,6 +37,7 @@ By default, Netlify builds the app after every change to the master branch in th
 ```bash
 git push
 ```
+
 ### ... but I don't use Netlify
 
 Check your hosting provider's documentation.

@@ -1,8 +1,8 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import Spinner from './Spinner.svelte'
-	import {formatNumber} from '../utils/format'
-	import {dateFromUnix} from '../utils/date'
+	import Spinner from './Spinner.svelte';
+	import {formatNumber} from '../utils/format';
+	import {dateFromUnix} from '../utils/date';
 
 	const dispatch = createEventDispatcher();
 
@@ -23,7 +23,7 @@
 		message = null;
 	}
 
-	const ssApiFetchPlayer = async playerId => (await (await fetch(`/cors/score-saber/api/player/${playerId}/full`)).json());
+	const ssApiFetchPlayer = async playerId => await (await fetch(`/cors/score-saber/api/player/${playerId}/full`)).json();
 
 	const blApiFetchPlayer = async playerId => {
 		const response = await fetch(`/cors/beatleader/player/${playerId}`);
@@ -34,14 +34,13 @@
 		return {
 			...data,
 			profilePicture: data?.avatar ?? null,
-		}
+		};
 	};
 
-	const ssApiFetchScoresPage = async (playerId, page = 1, itemsPerPage = 100) => ((await (await
-		fetch(`/cors/score-saber/api/player/${playerId}/scores?limit=${itemsPerPage}&page=${page}`)).json())?.playerScores ?? [])
-		.filter(s => s?.score?.pp)
-	;
-
+	const ssApiFetchScoresPage = async (playerId, page = 1, itemsPerPage = 100) =>
+		(
+			(await (await fetch(`/cors/score-saber/api/player/${playerId}/scores?limit=${itemsPerPage}&page=${page}`)).json())?.playerScores ?? []
+		).filter(s => s?.score?.pp);
 	const blApiFetchScoresPage = async (playerId, page = 1, itemsPerPage = 100) => {
 		const response = await fetch(`/cors/beatleader/player/${playerId}/scores?count=${itemsPerPage}&page=${page}&sortBy=pp&order=desc`);
 
@@ -49,31 +48,35 @@
 
 		const data = await response.json();
 
-		return data?.data?.filter(s => s?.pp)?.map(score => ({
-			score: {
-				...score,
-				percentage: (score?.accuracy ?? 0) * 100,
-				timeSet: dateFromUnix(score?.timeset),
-			},
-			leaderboard: {
-				...score?.leaderboard?.song ?? null,
-				...score?.leaderboard ?? null,
-				leaderboardId: score?.leaderboard?.id ?? null,
-				songHash: score?.leaderboard?.song?.hash ?? '',
-				songName: score?.leaderboard?.song?.name ?? '',
-				songSubName: score?.leaderboard?.song?.subName ?? '',
-				songAuthorName: score?.leaderboard?.song?.author ?? '',
-				levelAuthorName: score?.leaderboard?.song?.mapper ?? '',
-				stars: score?.leaderboard?.difficulty?.stars ?? 0,
-				difficulty: {
-					...score?.leaderboard?.difficulty,
-					type: score?.leaderboard?.difficulty?.modeName,
-					difficulty: score?.leaderboard?.difficulty?.value,
-					gameMode: score?.leaderboard?.difficulty?.modeName,
-				}
-			}
-		})) ?? [];
-	}
+		return (
+			data?.data
+				?.filter(s => s?.pp)
+				?.map(score => ({
+					score: {
+						...score,
+						percentage: (score?.accuracy ?? 0) * 100,
+						timeSet: dateFromUnix(score?.timeset),
+					},
+					leaderboard: {
+						...(score?.leaderboard?.song ?? null),
+						...(score?.leaderboard ?? null),
+						leaderboardId: score?.leaderboard?.id ?? null,
+						songHash: score?.leaderboard?.song?.hash ?? '',
+						songName: score?.leaderboard?.song?.name ?? '',
+						songSubName: score?.leaderboard?.song?.subName ?? '',
+						songAuthorName: score?.leaderboard?.song?.author ?? '',
+						levelAuthorName: score?.leaderboard?.song?.mapper ?? '',
+						stars: score?.leaderboard?.difficulty?.stars ?? 0,
+						difficulty: {
+							...score?.leaderboard?.difficulty,
+							type: score?.leaderboard?.difficulty?.modeName,
+							difficulty: score?.leaderboard?.difficulty?.value,
+							gameMode: score?.leaderboard?.difficulty?.modeName,
+						},
+					},
+				})) ?? []
+		);
+	};
 
 	async function fetchScores(service, playerInfo) {
 		if (!playerInfo?.id?.length) return;
@@ -99,7 +102,7 @@
 				allScoresFetched = scoresPage.length < itemsPerPage;
 			}
 
-			dispatch('download', {playerInfo, scores, service})
+			dispatch('download', {playerInfo, scores, service});
 		} catch (e) {
 			error = `Error has occurred: ${e.toString()}`;
 		} finally {
@@ -644,8 +647,8 @@
 		service = profileUrl.indexOf('scoresaber.com') >= 0 ? 'scoresaber' : 'beatleader';
 	}
 
-	$: extractPlayerId(profileUrl)
-	$: fetchPlayer(service, playerId)
+	$: extractPlayerId(profileUrl);
+	$: fetchPlayer(service, playerId);
 	$: fetchScores(service, playerInfo);
 
 	$: isSteamPlayer = playerInfo?.id && parseInt(playerInfo.id, 10) >= 70000000000000000;
@@ -654,24 +657,22 @@
 <main>
 	<section>
 		<div class="profile-input">
-			<input bind:value={profileUrl} placeholder="Your BeatLeader or ScoreSaber profile..." disabled={isFetching}
-						 autofocus/>
+			<input bind:value={profileUrl} placeholder="Your BeatLeader or ScoreSaber profile..." disabled={isFetching} autofocus />
 			{#if isFetching}
-				<Spinner/>
+				<Spinner />
 			{/if}
 		</div>
 
 		{#if playerInfo}
 			<h5 class="title is-5">
 				{#if isSteamPlayer}
-					<a class="player-name" rel="external" target="_blank"
-						 href="https://steamcommunity.com/profiles/{playerInfo.id}">
+					<a class="player-name" rel="external" target="_blank" href="https://steamcommunity.com/profiles/{playerInfo.id}">
 						{playerInfo.name}
 					</a>
 				{:else}
 					<span class="player-name">{playerInfo.name}</span>
 				{/if}
-				<span class="divider"></span>
+				<span class="divider" />
 				<span title="Performance Points" class="title-header pp">{formatNumber(playerInfo.pp)}pp</span>
 			</h5>
 		{/if}
@@ -685,77 +686,77 @@
 </main>
 
 <style>
-    main {
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 1rem;
-    }
+	main {
+		min-height: 100vh;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 1rem;
+	}
 
-    section {
-        width: 40rem;
-        max-width: 100%;
-        text-align: center;
-    }
+	section {
+		width: 40rem;
+		max-width: 100%;
+		text-align: center;
+	}
 
-    .player-name {
-        color: var(--ppColour) !important;
-    }
+	.player-name {
+		color: var(--ppColour) !important;
+	}
 
-    .profile-input {
-        position: relative;
-        margin-bottom: 1rem;
-    }
+	.profile-input {
+		position: relative;
+		margin-bottom: 1rem;
+	}
 
-    input {
-        width: 100%;
-        font-size: 1.25rem;
-        color: var(--textColor);
-        background-color: var(--foreground);
-        border: 1px solid var(--faded);
-        padding: .5rem 2rem .5rem .5rem;
-    }
+	input {
+		width: 100%;
+		font-size: 1.25rem;
+		color: var(--textColor);
+		background-color: var(--foreground);
+		border: 1px solid var(--faded);
+		padding: 0.5rem 2rem 0.5rem 0.5rem;
+	}
 
-    .profile-input :global(svg) {
-        position: absolute;
-        right: .5rem;
-        top: 1rem;
-    }
+	.profile-input :global(svg) {
+		position: absolute;
+		right: 0.5rem;
+		top: 1rem;
+	}
 
-    input::placeholder {
-        color: var(--faded) !important;
-    }
+	input::placeholder {
+		color: var(--faded) !important;
+	}
 
-    h5 {
-        display: inline-flex;
-        gap: .75rem;
-        justify-content: space-evenly;
-        align-items: center;
-        margin-bottom: 1rem !important;
-    }
+	h5 {
+		display: inline-flex;
+		gap: 0.75rem;
+		justify-content: space-evenly;
+		align-items: center;
+		margin-bottom: 1rem !important;
+	}
 
-    .divider {
-        border-left: 1px solid var(--dimmed);
-        height: .875rem;
-    }
+	.divider {
+		border-left: 1px solid var(--dimmed);
+		height: 0.875rem;
+	}
 
-    small {
-        display: block;
-    }
+	small {
+		display: block;
+	}
 
-    .error {
-        color: var(--decrease);
-    }
+	.error {
+		color: var(--decrease);
+	}
 
-    @media screen and (max-width: 767px) {
-        h5 {
-            flex-direction: column;
-            gap: .25rem;
-        }
+	@media screen and (max-width: 767px) {
+		h5 {
+			flex-direction: column;
+			gap: 0.25rem;
+		}
 
-        .divider {
-            display: none;
-        }
-    }
+		.divider {
+			display: none;
+		}
+	}
 </style>
