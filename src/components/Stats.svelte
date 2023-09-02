@@ -36,6 +36,14 @@
 		playlist.add(hash, difficulty);
 	}
 
+	function onAddAllToPlaylist(e) {
+		if (!Array.isArray(e?.detail)) return;
+
+		for (const leaderboard of e.detail) {
+			onAddToPlaylist({detail: leaderboard});
+		}
+	}
+
 	function onRemoveFromPlaylist(e) {
 		if (!e?.detail?.songHash || !e?.detail?.difficulty?.difficulty) return;
 
@@ -137,6 +145,7 @@
 				{modifiedScores}
 				on:score-changed={onScoreChanged}
 				on:add-to-playlist={onAddToPlaylist}
+				on:add-all-to-playlist={onAddAllToPlaylist}
 				on:remove-from-playlist={onRemoveFromPlaylist} />
 		</div>
 	{/if}
