@@ -635,7 +635,7 @@
 			return;
 		}
 
-		const matches = profileUrl.match(/https?:\/\/(?:www\.)?(?:scoresaber\.com|beatleader\.xyz)\/u\/(\d+)/);
+		const matches = profileUrl.match(/https?:\/\/(?:www\.)?(?:scoresaber\.com|beatleader\.xyz|beatleader\.net)\/u\/(.*?)(?:\/|$)/);
 		if (!matches) {
 			error = 'Invalid URL';
 			return;
