@@ -1,4 +1,4 @@
-# Score Saber PP calculator
+# BeatLeader / Score Saber PP calculator
 
 ## Users
 
